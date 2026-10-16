@@ -14,3 +14,10 @@ A responsive e-commerce web app built with HTML, CSS, and vanilla JavaScript. It
 - **Persistent state:** products, cart, and session are saved in localStorage
 - **Responsive design:** works on phones and desktops
 -
+## Setup
+
+```bash
+git clone https://github.com/nandini-tech2026/shopeasy-ecommerce-capstone.git
+```
+
+Then open `index.html` in your browser.
