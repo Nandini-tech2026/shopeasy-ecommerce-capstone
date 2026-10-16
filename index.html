@@ -7,31 +7,42 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>ShopEasy</h1>
-    <input id="search" type="search" placeholder="Search products">
-    <button id="cartBtn">Cart (<span id="cartCount">0</span>)</button>
-    <button id="authBtn">Log in</button>
-  </header>
-
-  <main>
-    <div class="bar">
-      <select id="category" aria-label="Category"></select>
-      <button id="addBtn" class="primary" hidden>Add product</button>
+  <section id="authScreen" class="auth">
+    <div class="auth-card">
+      <h1>ShopEasy</h1>
+      <div class="tabs">
+        <button type="button" id="tabLogin" class="tab active">Log in</button>
+        <button type="button" id="tabSignup" class="tab">Sign up</button>
+      </div>
+      <form id="authForm" novalidate>
+        <label id="nameRow" hidden>Full name <input id="name" autocomplete="name"></label>
+        <label>Email <input id="email" type="email" autocomplete="email"></label>
+        <label>Password <input id="password" type="password" autocomplete="current-password"></label>
+        <label id="confirmRow" hidden>Confirm password <input id="confirm" type="password" autocomplete="new-password"></label>
+        <label class="check"><input id="showPw" type="checkbox"> Show password</label>
+        <p id="authError" class="error" role="alert"></p>
+        <button id="authSubmit" class="primary full" type="submit">Log in</button>
+      </form>
     </div>
-    <div id="grid" class="grid"></div>
-    <p id="empty" hidden>No products match. Try a different search.</p>
-  </main>
+  </section>
 
-  <dialog id="loginDlg">
-    <form method="dialog" id="loginForm">
-      <h2>Log in</h2>
-      <label>Email <input id="email" type="email" required></label>
-      <label>Password <input id="password" type="password" minlength="4" required></label>
-      <p class="hint">Demo login: any email and a 4+ character password.</p>
-      <div class="row"><button value="cancel" formnovalidate>Cancel</button><button class="primary" value="ok">Log in</button></div>
-    </form>
-  </dialog>
+  <div id="appRoot" hidden>
+    <header>
+      <h1>ShopEasy</h1>
+      <input id="search" type="search" placeholder="Search products">
+      <button id="cartBtn">Cart (<span id="cartCount">0</span>)</button>
+      <button id="authBtn">Log out</button>
+    </header>
+
+    <main>
+      <div class="bar">
+        <select id="category" aria-label="Category"></select>
+        <button id="addBtn" class="primary">Add product</button>
+      </div>
+      <div id="grid" class="grid"></div>
+      <p id="empty" hidden>No products match. Try a different search.</p>
+    </main>
+  </div>
 
   <dialog id="productDlg">
     <form method="dialog" id="productForm">
@@ -54,4 +65,4 @@
   <div id="toast" role="status"></div>
   <script src="app.js"></script>
 </body>
-</html>
+                       </html>
