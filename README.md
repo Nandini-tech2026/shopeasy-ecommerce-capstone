@@ -2,8 +2,8 @@
 
 A responsive e-commerce web app built with HTML, CSS, and vanilla JavaScript. It features simulated login, a searchable product catalog, full CRUD, and a persistent cart.
 
-**Live demo:** https://YOUR-SITE.netlify.app
-**Repository:** https://github.com/YOUR-nandini-tech2026/shopeasy-ecommerce-capstone
+**Live demo:** https://shopeasy-capstone.netlify.app
+**Repository:** https://github.com/nandini-tech2026/shopeasy-ecommerce-capstone
 
 ## Features
 
