@@ -1,0 +1,58 @@
+:root {
+  --bg: #f2f5f4;
+  --card: #ffffff;
+  --ink: #14213d;
+  --muted: #5b6577;
+  --accent: #0f766e;
+  --line: #d6dde3;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+header {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  padding: 12px 16px; background: var(--ink); color: #fff;
+  position: sticky; top: 0; z-index: 5;
+}
+header h1 { margin: 0; font-size: 1.3rem; flex: 1 1 100%; }
+header input { flex: 1 1 140px; }
+button, input, select {
+  font: inherit; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--line);
+}
+button { cursor: pointer; background: #fff; color: var(--ink); }
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+button.danger { color: #b42318; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #f5b301; outline-offset: 1px; }
+main { max-width: 1000px; margin: 0 auto; padding: 16px; }
+.bar { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px; display: flex; flex-direction: column; gap: 6px;
+}
+.card .emoji { font-size: 2.6rem; }
+.card h3 { margin: 0; font-size: 1rem; }
+.card .cat { color: var(--muted); font-size: .85rem; }
+.card .price { font-weight: 700; }
+.card .actions { display: flex; gap: 6px; margin-top: auto; flex-wrap: wrap; }
+.card .actions button { padding: 6px 10px; font-size: .85rem; }
+dialog { border: 0; border-radius: 12px; padding: 20px; width: min(92vw, 380px); }
+dialog::backdrop { background: rgba(20, 33, 61, .5); }
+dialog h2 { margin-top: 0; }
+label { display: block; margin-bottom: 10px; font-size: .9rem; }
+label input { display: block; width: 100%; margin-top: 4px; }
+.row { display: flex; justify-content: flex-end; gap: 8px; }
+.hint { color: var(--muted); font-size: .85rem; }
+.cart-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+#toast {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 8px;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+#toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
