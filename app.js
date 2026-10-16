@@ -1,5 +1,5 @@
 // ---------- Storage helpers ----------
-const KEYS = { products: "se_products", cart: "se_cart", user: "se_user" };
+const KEYS = { products: "se_products", cart: "se_cart", user: "se_session", users: "se_users" };
 
 function load(key, fallback) {
   try {
@@ -23,9 +23,11 @@ const seed = [
   { id: 6, name: "Smart Watch", price: 89, category: "Electronics", emoji: "⌚" }
 ];
 let products = load(KEYS.products, seed);
-let cart = load(KEYS.cart, {}); // { productId: quantity }
+let cart = load(KEYS.cart, {});
+let users = load(KEYS.users, []);
 let user = load(KEYS.user, null);
 let editingId = null;
+let mode = "login";
 
 // ---------- DOM ----------
 const $ = (id) => document.getElementById(id);
@@ -38,6 +40,87 @@ function toast(msg) {
   setTimeout(() => t.classList.remove("show"), 1800);
 }
 
+// ---------- Auth ----------
+async function hashPassword(email, pw) {
+  const text = email.toLowerCase() + ":" + pw;
+  if (window.crypto && crypto.subtle) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+  let h = 0;
+  for (const ch of text) h = (h * 31 + ch.charCodeAt(0)) | 0;
+  return "f" + h;
+}
+
+function setMode(m) {
+  mode = m;
+  const signup = m === "signup";
+  $("tabLogin").classList.toggle("active", !signup);
+  $("tabSignup").classList.toggle("active", signup);
+  $("nameRow").hidden = !signup;
+  $("confirmRow").hidden = !signup;
+  $("authSubmit").textContent = signup ? "Create account" : "Log in";
+  $("password").autocomplete = signup ? "new-password" : "current-password";
+  $("authError").textContent = "";
+}
+
+function showScreen() {
+  $("authScreen").hidden = !!user;
+  $("appRoot").hidden = !user;
+  if (user) {
+    $("authBtn").textContent = "Log out (" + (user.name || user.email) + ")";
+    renderAll();
+  }
+}
+
+$("tabLogin").addEventListener("click", () => setMode("login"));
+$("tabSignup").addEventListener("click", () => setMode("signup"));
+$("showPw").addEventListener("change", (e) => {
+  const type = e.target.checked ? "text" : "password";
+  $("password").type = type;
+  $("confirm").type = type;
+});
+
+$("authForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = $("authError");
+  const email = $("email").value.trim().toLowerCase();
+  const pw = $("password").value;
+  err.textContent = "";
+
+  if (!$("email").checkValidity() || !email) { err.textContent = "Enter a valid email address."; return; }
+  if (pw.length < 6) { err.textContent = "Password must be at least 6 characters."; return; }
+
+  if (mode === "signup") {
+    const name = $("name").value.trim();
+    if (!name) { err.textContent = "Enter your full name."; return; }
+    if (pw !== $("confirm").value) { err.textContent = "Passwords do not match."; return; }
+    if (users.some((u) => u.email === email)) { err.textContent = "This email already has an account. Log in instead."; return; }
+    users.push({ email, name, hash: await hashPassword(email, pw) });
+    save(KEYS.users, users);
+    user = { email, name };
+    save(KEYS.user, user);
+    toast("Account created. Welcome, " + name);
+  } else {
+    const found = users.find((u) => u.email === email);
+    if (!found) { err.textContent = "No account found. Sign up first."; return; }
+    if (found.hash !== (await hashPassword(email, pw))) { err.textContent = "Incorrect email or password."; return; }
+    user = { email, name: found.name };
+    save(KEYS.user, user);
+    toast("Welcome back, " + found.name);
+  }
+  $("authForm").reset();
+  showScreen();
+});
+
+$("authBtn").addEventListener("click", () => {
+  user = null;
+  localStorage.removeItem(KEYS.user);
+  setMode("login");
+  showScreen();
+  toast("Logged out");
+});
+
 // ---------- Render ----------
 function renderCategories() {
   const current = $("category").value || "All";
@@ -49,6 +132,14 @@ function renderCategories() {
     $("category").appendChild(o);
   });
   $("category").value = cats.includes(current) ? current : "All";
+}
+
+function button(label, cls, handler) {
+  const b = document.createElement("button");
+  b.textContent = label;
+  if (cls) b.className = cls;
+  b.addEventListener("click", handler);
+  return b;
 }
 
 function renderProducts() {
@@ -83,27 +174,12 @@ function renderProducts() {
     const actions = document.createElement("div");
     actions.className = "actions";
     actions.appendChild(button("Add to cart", "primary", () => addToCart(p.id)));
-    if (user) {
-      actions.appendChild(button("Edit", "", () => openProductForm(p.id)));
-      actions.appendChild(button("Delete", "danger", () => deleteProduct(p.id)));
-    }
+    actions.appendChild(button("Edit", "", () => openProductForm(p.id)));
+    actions.appendChild(button("Delete", "danger", () => deleteProduct(p.id)));
 
     card.append(emoji, name, c, price, actions);
     grid.appendChild(card);
   });
-}
-
-function button(label, cls, handler) {
-  const b = document.createElement("button");
-  b.textContent = label;
-  if (cls) b.className = cls;
-  b.addEventListener("click", handler);
-  return b;
-}
-
-function renderAuth() {
-  $("authBtn").textContent = user ? "Log out (" + user.email + ")" : "Log in";
-  $("addBtn").hidden = !user;
 }
 
 function renderCartCount() {
@@ -114,31 +190,8 @@ function renderCartCount() {
 function renderAll() {
   renderCategories();
   renderProducts();
-  renderAuth();
   renderCartCount();
 }
-
-// ---------- Auth (simulated) ----------
-$("authBtn").addEventListener("click", () => {
-  if (user) {
-    user = null;
-    localStorage.removeItem(KEYS.user);
-    toast("Logged out");
-    renderAll();
-  } else {
-    $("loginDlg").showModal();
-  }
-});
-
-$("loginForm").addEventListener("submit", (e) => {
-  if (e.submitter && e.submitter.value === "ok") {
-    user = { email: $("email").value.trim() };
-    save(KEYS.user, user);
-    $("loginForm").reset();
-    toast("Welcome, " + user.email);
-    renderAll();
-  }
-});
 
 // ---------- CRUD ----------
 function openProductForm(id) {
@@ -234,4 +287,6 @@ $("clearCart").addEventListener("click", () => {
 $("search").addEventListener("input", renderProducts);
 $("category").addEventListener("change", renderProducts);
 
-renderAll();
+// ---------- Start ----------
+setMode("login");
+showScreen();
