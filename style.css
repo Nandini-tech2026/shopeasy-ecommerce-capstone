@@ -56,3 +56,14 @@ label input { display: block; width: 100%; margin-top: 4px; }
 }
 #toast.show { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+[hidden] { display: none !important; }
+.auth { min-height: 100vh; display: grid; place-items: center; padding: 16px; background: var(--ink); }
+.auth-card { background: #fff; width: min(100%, 380px); border-radius: 14px; padding: 24px; }
+.auth-card h1 { margin: 0 0 14px; }
+.tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+.tab { flex: 1; }
+.tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.check { display: flex; align-items: center; gap: 8px; }
+.check input { display: inline; width: auto; margin: 0; }
+.error { color: #b42318; min-height: 1.2em; margin: 4px 0 10px; font-size: .9rem; }
+.full { width: 100%; }
