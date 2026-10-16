@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopEasy</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>ShopEasy</h1>
+    <input id="search" type="search" placeholder="Search products">
+    <button id="cartBtn">Cart (<span id="cartCount">0</span>)</button>
+    <button id="authBtn">Log in</button>
+  </header>
+
+  <main>
+    <div class="bar">
+      <select id="category" aria-label="Category"></select>
+      <button id="addBtn" class="primary" hidden>Add product</button>
+    </div>
+    <div id="grid" class="grid"></div>
+    <p id="empty" hidden>No products match. Try a different search.</p>
+  </main>
+
+  <dialog id="loginDlg">
+    <form method="dialog" id="loginForm">
+      <h2>Log in</h2>
+      <label>Email <input id="email" type="email" required></label>
+      <label>Password <input id="password" type="password" minlength="4" required></label>
+      <p class="hint">Demo login: any email and a 4+ character password.</p>
+      <div class="row"><button value="cancel" formnovalidate>Cancel</button><button class="primary" value="ok">Log in</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="productDlg">
+    <form method="dialog" id="productForm">
+      <h2 id="productTitle">Add product</h2>
+      <label>Name <input id="pName" required></label>
+      <label>Price (USD) <input id="pPrice" type="number" min="0" step="0.01" required></label>
+      <label>Category <input id="pCat" required></label>
+      <label>Emoji <input id="pEmoji" maxlength="2" value="🛍️"></label>
+      <div class="row"><button value="cancel" formnovalidate>Cancel</button><button class="primary" value="ok">Save</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="cartDlg">
+    <h2>Your cart</h2>
+    <div id="cartItems"></div>
+    <p><strong>Total: <span id="cartTotal">$0.00</span></strong></p>
+    <div class="row"><button id="clearCart">Clear cart</button><button id="closeCart" class="primary">Close</button></div>
+  </dialog>
+
+  <div id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
